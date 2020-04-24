@@ -1,4 +1,3 @@
-
 var URL_ENDPOINT = '/yii2sqlite/web/todo';
 
 var Todo = Backbone.Model.extend({
@@ -20,8 +19,8 @@ var Todo = Backbone.Model.extend({
     if (attrs.title == undefined ) {
         return "Title can't be empty";
       }
-  }
-});
+  },
+}); // Todo Model
 
 var TodoList = Backbone.Collection.extend({
   url :URL_ENDPOINT,
@@ -32,19 +31,35 @@ var TodoList = Backbone.Collection.extend({
         return todo.get('status');
     });
   }
-});
+}); // TodoList Collection
 
 var TodoView = Backbone.View.extend({
-  el: '#todo-list',
+  // el: '#todo-list',
   model: Todo,
   tagName:  'tr',
   // Cache the template function for a single item.
   template: _.template( $('#item-template').html() ),
+  initialize: function (){
+    // this.model.on( 'destroy', this.remove, this );
+  },
+  events: {
+    'click .btn-destroy': 'delete' /*function () {
+      // this.$el.hide(); // hide the container element
+      // this.model.delete();
+      // this.model.remove( this.model.id );
+      // console.log(this.model.id );
+      // console.log(this.model );
+    },*/
+  },
   render: function() {
-    this.$el.html( this.template( this.model.attributes ) );
+    // console.log(this.model);
+    this.$el.html( this.template( this.model ) );
     return this;
   },
-});
+  delete: function (){
+    this.model.deleteTask();
+  }
+}); // TodoView View
 
 // var TodoList = Backbone.Collection.extend({
 //   url :"./todo",
@@ -143,19 +158,27 @@ var TodoView = Backbone.View.extend({
   }
 });*/
 
-$(function(){
-  console.log('loaded');
+(function(){
 
-  var todo1 = new Todo({'title': 'learn Backbone', 'status': false});
-  var todo2 = new Todo({'title': 'learn Odoo', 'status': true});
+  // var todo1 = new Todo({'title': 'learn Backbone', 'status': false});
+  // todo1.delete();
+  // var todo2 = new Todo({'title': 'learn Odoo', 'status': true});
+  // new TodoView({model: todo1}).render();
 
-  new TodoView({model: todo1}).render();
+  // Fetch all todos if list empty
   var todos = new TodoList();
+
   todos.fetch().then(function (response) {
-    // console.log(response);
+    var todoList = [];
+    console.log('There are : ', response.length, ' todo(s).');
     _.each(response, function (todo) {
-      console.log(JSON.stringify(todo));
+      todo.deleteTask = function () {
+        console.log('delete : ', this.id);
+      };
+      todoList.push( new TodoView({model: todo}).render().el );
+      // console.log(JSON.stringify(todo));
     });
+    $('#todo-list').append(todoList);
   });
 
   // Backbone.sync = function(method, model) {
@@ -163,28 +186,21 @@ $(function(){
   //   model.set('id', 1);
   // };
 
-  // todo1.save({error: function (err){
-  //   if (err){
-  //     console.log('Error:', err.message);
-  //   }
-  // }});
-
-  // _.each([todo1, todo2], function (todo) {
-  //   new TodoView({model: todo}).render().el;
-  // });
-
-  // $('#todo-list').append(todos);
-  // new TodoView().render();
-
-  $('#btn-submit').click(function (){
-    if ($('#title').val() === ''){
+  $('#btn-submit').click(function (e){
+    e.preventDefault();
+    var taskTitle = $('#title').val();
+    if (taskTitle === ''){
       alert('Please enter a title');
       return;
     }
-    var todo = new Todo({ title: $('#title').val(), status: $('#status')[0].checked });
-    todo.save({'created_at': new Date().getTime()});
-    todos.add(todo);
-    console.log(todos.toJSON());
-  });
+    // todos.create({ title: taskTitle }); // need to implement TaskListView
+    var todo = new Todo({ title: taskTitle });
+    todo.save({'created_at': new Date().getTime()}, function (){
+      todos.add(todo);
+      console.log(todos.toJSON());
+    });
 
-});
+  }); // click
+
+
+})();
