@@ -9,7 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property string $title
- * @property bool $status
+ * @property bool $completed
  * @property string $created_at
  * @property string $updated_at
  */
@@ -31,7 +31,7 @@ class Todo extends \yii\db\ActiveRecord
         return [
             [['title'], 'required'],
             [['title'], 'string'],
-            [['status'], 'boolean'],
+            [['completed'], 'boolean'],
             [['created_at', 'updated_at'], 'safe'],
         ];
     }
@@ -44,7 +44,7 @@ class Todo extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'title' => 'Title',
-            'status' => 'Status',
+            'completed' => 'Completed',
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
         ];

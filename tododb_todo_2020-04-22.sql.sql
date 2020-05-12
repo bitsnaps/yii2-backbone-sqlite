@@ -10,7 +10,7 @@ BEGIN TRANSACTION;
 -- Table structure for todo
 ----
 CREATE TABLE 'todo' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  'title' TEXT NOT NULL, 'status' BOOLEAN, 'created_at' DATETIME, 'updated_at' DATETIME);
+  'title' TEXT NOT NULL, 'completed' BOOLEAN, 'created_at' DATETIME, 'updated_at' DATETIME);
 
 CREATE TABLE 'user' (
   'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
